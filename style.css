@@ -1,10 +1,10 @@
-/* Minimal YMCA brand style */
 body {
   font-family: 'Segoe UI', sans-serif;
   background: #f9f9f9;
   margin: 0;
   padding: 0;
 }
+
 .container {
   max-width: 800px;
   margin: 2rem auto;
@@ -13,19 +13,25 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
+
 .logo {
   max-width: 150px;
   margin-bottom: 1rem;
 }
+
 header h1 {
   color: #ff0044;
+  font-size: 1.4rem;
 }
+
 input, button, canvas {
   display: block;
   margin: 0.5rem 0;
   width: 100%;
   box-sizing: border-box;
+  font-size: 1rem;
 }
+
 button {
   background: #ff0044;
   color: white;
@@ -34,6 +40,29 @@ button {
   border-radius: 4px;
   cursor: pointer;
 }
+
 button:hover {
   opacity: 0.9;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+section {
+  margin-bottom: 2rem;
+}
+
+h2 {
+  color: #ff0044;
+  margin-bottom: 0.5rem;
+}
+
+#signatureCanvas {
+  border: 1px solid #ccc;
+  background: #fff;
+  height: 100px;
 }
