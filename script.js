@@ -109,3 +109,20 @@ function draw(e) {
 }
 
 document.getElementById('clear-signature').onclick = () => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+};
+
+// PDF download
+const downloadBtn = document.getElementById('download-pdf');
+downloadBtn.onclick = () => {
+  html2pdf()
+    .set({
+      margin: 10,
+      filename: `YMCA_Expenses_${document.getElementById('name').value || 'claim'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, scrollY: 0 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    })
+    .from(document.querySelector('.container'))
+    .save();
+};
