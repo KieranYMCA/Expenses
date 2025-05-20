@@ -1,3 +1,5 @@
+// Updated script.js
+
 // Auto-calculate mileage and total
 const form = document.getElementById('expenses-form');
 const addMileageBtn = document.getElementById('add-mileage');
@@ -63,34 +65,28 @@ document.getElementById('clear-signature').onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
-// PDF Generation
+// Submit button sends email via mailto:
+document.getElementById('expenses-form').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const name = document.getElementById('name').value;
+  const job = document.getElementById('jobTitle').value;
+  const period = document.getElementById('claimPeriod').value;
+  const total = document.getElementById('totalAmount').value;
+  const auth = document.getElementById('claimAuthorised').value;
+
+  const subject = encodeURIComponent(`Expense Claim from ${name}`);
+  const body = encodeURIComponent(
+    `Name: ${name}\nJob Title: ${job}\nPeriod: ${period}\nClaim Authorised By: ${auth}\nTotal Claimed: £${total}`
+  );
+
+  window.location.href = `mailto:Kieran@ymca.scot?subject=${subject}&body=${body}`;
+});
+
+// PDF Generation from visible page
 const downloadBtn = document.getElementById('download-pdf');
-downloadBtn.onclick = () => generatePDF();
-
-function generatePDF() {
-  const pdfContent = document.createElement('div');
-  pdfContent.innerHTML = `
-    <h1>YMCA Scotland Expense Claim</h1>
-    <p><strong>Name:</strong> ${document.getElementById('name').value}</p>
-    <p><strong>Job Title:</strong> ${document.getElementById('jobTitle').value}</p>
-    <p><strong>Claim Period:</strong> ${document.getElementById('claimPeriod').value}</p>
-    <p><strong>Claim Authorised By:</strong> ${document.getElementById('claimAuthorised').value}</p>
-    <p><strong>Total Claimed:</strong> £${document.getElementById('totalAmount').value}</p>
-    <h2>Mileage Claims</h2>
-    <ul>
-      ${[...document.querySelectorAll('.entry')].map(entry => {
-        const date = entry.querySelector('.mileage-date').value;
-        const purpose = entry.querySelector('.mileage-purpose').value;
-        const miles = entry.querySelector('.mileage-miles').value;
-        const amount = entry.querySelector('.mileage-amount').value;
-        return `<li>${date} — ${purpose} — ${miles} miles — £${amount}</li>`;
-      }).join('')}
-    </ul>
-    <p><strong>Date Signed:</strong> ${document.getElementById('signatureDate').value}</p>
-    <h2>Signature</h2>
-    <img src="${canvas.toDataURL()}" width="300" />
-  `;
-
+downloadBtn.onclick = () => {
+  const element = document.querySelector('.container');
   const opt = {
     margin: [10, 10],
     filename: `YMCA_Expenses_${document.getElementById('name').value || 'claim'}.pdf`,
@@ -98,6 +94,5 @@ function generatePDF() {
     html2canvas: { scale: 2 },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
   };
-
-  html2pdf().from(pdfContent).set(opt).save();
-}
+  html2pdf().from(element).set(opt).save();
+};
