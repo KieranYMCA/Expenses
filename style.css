@@ -1,3 +1,5 @@
+/* style.css */
+
 body {
   font-family: 'Segoe UI', sans-serif;
   background: #f9f9f9;
@@ -16,40 +18,24 @@ body {
 
 .logo {
   max-width: 150px;
+  display: block;
   margin-bottom: 1rem;
 }
 
 header h1 {
   color: #ff0044;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
 }
 
-input, button, canvas {
-  display: block;
-  margin: 0.5rem 0;
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 1rem;
-}
-
-button {
-  background: #ff0044;
-  color: white;
+input[type="text"],
+input[type="date"],
+input[type="number"] {
   padding: 10px;
-  border: none;
+  margin: 5px 0;
+  width: calc(50% - 10px);
+  box-sizing: border-box;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-.entry {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
 }
 
 section {
@@ -57,12 +43,36 @@ section {
 }
 
 h2 {
+  font-size: 1.2rem;
   color: #ff0044;
   margin-bottom: 0.5rem;
 }
 
-#signatureCanvas {
+button {
+  background-color: #ff0044;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+canvas {
   border: 1px solid #ccc;
+  border-radius: 4px;
   background: #fff;
-  height: 100px;
+}
+
+.submit-btn {
+  margin-right: 10px;
+}
+
+#pdfContent {
+  display: none;
 }
