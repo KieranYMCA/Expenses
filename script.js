@@ -94,5 +94,5 @@ downloadBtn.onclick = () => {
     html2canvas: { scale: 2 },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
   };
-  html2pdf().from(element).set(opt).save();
+  html2pdf()   .set({     margin: [15, 10, 15, 10], // top, left, bottom, right     filename: `YMCA_Expenses_${document.getElementById('name').value || 'claim'}.pdf`,     image: { type: 'jpeg', quality: 0.98 },     html2canvas: {       scale: 2,       scrollY: 0,       windowWidth: document.body.scrollWidth,     },     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },     pagebreak: { mode: ['css', 'legacy'] }   })   .from(element)   .save();
 };
