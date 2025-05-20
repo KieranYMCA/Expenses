@@ -1,89 +1,39 @@
+// Auto-calculate mileage and total
 const form = document.getElementById('expenses-form');
 const addMileageBtn = document.getElementById('add-mileage');
-const addPhoneBtn = document.getElementById('add-phone');
-const addOtherBtn = document.getElementById('add-other');
-const totalAmount = document.getElementById('totalAmount');
+const mileageContainer = document.getElementById('mileage-claims');
 const mileageSubtotal = document.getElementById('mileage-subtotal');
-const phoneSubtotal = document.getElementById('phone-subtotal');
-const otherSubtotal = document.getElementById('other-subtotal');
+const totalAmount = document.getElementById('totalAmount');
+
 const MILEAGE_RATE = 0.45;
 
 function updateTotals() {
   let total = 0;
-
   let mileageTotal = 0;
-  document.querySelectorAll('.mileage-entry').forEach(row => {
-    const miles = parseFloat(row.querySelector('.mileage-miles').value) || 0;
-    const amount = miles * MILEAGE_RATE;
-    row.querySelector('.mileage-amount').value = amount.toFixed(2);
-    mileageTotal += amount;
+
+  document.querySelectorAll('.mileage-miles').forEach((input, i) => {
+    const miles = parseFloat(input.value) || 0;
+    const amount = (miles * MILEAGE_RATE).toFixed(2);
+    mileageTotal += parseFloat(amount);
+    document.querySelectorAll('.mileage-amount')[i].value = amount;
   });
+
   mileageSubtotal.innerText = mileageTotal.toFixed(2);
-  total += mileageTotal;
-
-  let phoneTotal = 0;
-  document.querySelectorAll('.phone-entry').forEach(row => {
-    const amt = parseFloat(row.querySelector('.phone-amount').value) || 0;
-    phoneTotal += amt;
-  });
-  phoneSubtotal.innerText = phoneTotal.toFixed(2);
-  total += phoneTotal;
-
-  let otherTotal = 0;
-  document.querySelectorAll('.other-entry').forEach(row => {
-    const amt = parseFloat(row.querySelector('.other-amount').value) || 0;
-    otherTotal += amt;
-  });
-  otherSubtotal.innerText = otherTotal.toFixed(2);
-  total += otherTotal;
-
+  total = mileageTotal;
   totalAmount.value = total.toFixed(2);
 }
 
 form.addEventListener('input', updateTotals);
-
-function bindInputs(entry) {
-  entry.querySelectorAll('input').forEach(input => {
-    input.addEventListener('input', updateTotals);
-  });
-}
-
 addMileageBtn.addEventListener('click', () => {
   const entry = document.createElement('div');
-  entry.className = 'entry mileage-entry';
+  entry.className = 'entry';
   entry.innerHTML = `
-    <input type="date" class="mileage-date" name="mileage-date[]" />
-    <input type="text" class="mileage-purpose" name="mileage-purpose[]" placeholder="Purpose of Journey" />
-    <input type="number" class="mileage-miles" name="mileage-miles[]" placeholder="Miles" step="0.1" />
-    <input type="text" class="mileage-amount" name="mileage-amount[]" placeholder="£" readonly />
+    <input type="date" class="mileage-date" />
+    <input type="text" class="mileage-purpose" placeholder="Purpose of Journey" />
+    <input type="number" class="mileage-miles" placeholder="Miles" step="0.1" />
+    <input type="text" class="mileage-amount" placeholder="£" readonly />
   `;
-  addMileageBtn.before(entry);
-  bindInputs(entry);
-});
-
-addPhoneBtn.addEventListener('click', () => {
-  const entry = document.createElement('div');
-  entry.className = 'entry phone-entry';
-  entry.innerHTML = `
-    <input type="text" class="phone-period" name="phone-period[]" placeholder="Bill Period" />
-    <label><input type="checkbox" class="phone-attached" name="phone-attached[]" /> Bill Attached?</label>
-    <input type="number" class="phone-amount" name="phone-amount[]" placeholder="£" step="0.01" />
-  `;
-  addPhoneBtn.before(entry);
-  bindInputs(entry);
-});
-
-addOtherBtn.addEventListener('click', () => {
-  const entry = document.createElement('div');
-  entry.className = 'entry other-entry';
-  entry.innerHTML = `
-    <input type="date" class="other-date" name="other-date[]" />
-    <input type="text" class="other-reason" name="other-reason[]" placeholder="Reason for Expense" />
-    <label><input type="checkbox" class="other-attached" name="other-attached[]" /> Receipt Attached?</label>
-    <input type="number" class="other-amount" name="other-amount[]" placeholder="£" step="0.01" />
-  `;
-  addOtherBtn.before(entry);
-  bindInputs(entry);
+  mileageContainer.insertBefore(entry, addMileageBtn);
 });
 
 // Signature pad
@@ -113,39 +63,42 @@ document.getElementById('clear-signature').onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
-// Submit using Formspree JSON API with signature
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const data = new FormData(form);
-  data.append('signature', canvas.toDataURL());
-  const json = {};
+// PDF Generation
+const downloadBtn = document.getElementById('download-pdf');
+downloadBtn.onclick = () => generatePDF();
 
-  data.forEach((value, key) => {
-    if (!json[key]) {
-      json[key] = value;
-    } else {
-      if (!Array.isArray(json[key])) {
-        json[key] = [json[key]];
-      }
-      json[key].push(value);
-    }
-  });
+function generatePDF() {
+  const pdfContent = document.createElement('div');
+  pdfContent.innerHTML = `
+    <h1>YMCA Scotland Expense Claim</h1>
+    <p><strong>Name:</strong> ${document.getElementById('name').value}</p>
+    <p><strong>Job Title:</strong> ${document.getElementById('jobTitle').value}</p>
+    <p><strong>Claim Period:</strong> ${document.getElementById('claimPeriod').value}</p>
+    <p><strong>Claim Authorised By:</strong> ${document.getElementById('claimAuthorised').value}</p>
+    <p><strong>Total Claimed:</strong> £${document.getElementById('totalAmount').value}</p>
+    <h2>Mileage Claims</h2>
+    <ul>
+      ${[...document.querySelectorAll('.entry')].map(entry => {
+        const date = entry.querySelector('.mileage-date').value;
+        const purpose = entry.querySelector('.mileage-purpose').value;
+        const miles = entry.querySelector('.mileage-miles').value;
+        const amount = entry.querySelector('.mileage-amount').value;
+        return `<li>${date} — ${purpose} — ${miles} miles — £${amount}</li>`;
+      }).join('')}
+    </ul>
+    <p><strong>Date Signed:</strong> ${document.getElementById('signatureDate').value}</p>
+    <h2>Signature</h2>
+    <img src="${canvas.toDataURL()}" width="300" />
+  `;
 
-  const response = await fetch('https://formspree.io/f/movdbkbj', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(json)
-  });
+  const opt = {
+    margin: [10, 10],
+    filename: `YMCA_Expenses_${document.getElementById('name').value || 'claim'}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+  };
 
-  if (response.ok) {
-    alert('✅ Your claim was submitted successfully!');
-    form.reset();
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    updateTotals();
-  } else {
-    alert('❌ There was an error submitting your form.');
-  }
-});
+  html2pdf().from(pdfContent).set(opt).save();
+}
+
