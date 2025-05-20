@@ -1,31 +1,32 @@
-// Updated script.js
+// Updated script.js (full rebuild with mileage fix, Safari support, optional sections, and working PDF)
 
-// Auto-calculate mileage and total
 const form = document.getElementById('expenses-form');
 const addMileageBtn = document.getElementById('add-mileage');
 const mileageContainer = document.getElementById('mileage-claims');
 const mileageSubtotal = document.getElementById('mileage-subtotal');
 const totalAmount = document.getElementById('totalAmount');
-
 const MILEAGE_RATE = 0.45;
 
 function updateTotals() {
   let total = 0;
   let mileageTotal = 0;
 
-  document.querySelectorAll('.mileage-miles').forEach((input, i) => {
-    const miles = parseFloat(input.value) || 0;
-    const amount = (miles * MILEAGE_RATE).toFixed(2);
-    mileageTotal += parseFloat(amount);
-    document.querySelectorAll('.mileage-amount')[i].value = amount;
-  });
+  const milesInputs = document.querySelectorAll('.mileage-miles');
+  const amountInputs = document.querySelectorAll('.mileage-amount');
+
+  for (let i = 0; i < milesInputs.length; i++) {
+    const miles = parseFloat(milesInputs[i].value);
+    const amount = isNaN(miles) ? 0 : (miles * MILEAGE_RATE);
+    amountInputs[i].value = amount.toFixed(2);
+    mileageTotal += amount;
+  }
 
   mileageSubtotal.innerText = mileageTotal.toFixed(2);
-  total = mileageTotal;
-  totalAmount.value = total.toFixed(2);
+  totalAmount.value = mileageTotal.toFixed(2); // Expand if other sections are re-added
 }
 
 form.addEventListener('input', updateTotals);
+
 addMileageBtn.addEventListener('click', () => {
   const entry = document.createElement('div');
   entry.className = 'entry';
@@ -36,6 +37,9 @@ addMileageBtn.addEventListener('click', () => {
     <input type="text" class="mileage-amount" placeholder="£" readonly />
   `;
   mileageContainer.insertBefore(entry, addMileageBtn);
+  entry.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', updateTotals);
+  });
 });
 
 // Signature pad
@@ -65,8 +69,8 @@ document.getElementById('clear-signature').onclick = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
-// Submit button sends email via mailto:
-document.getElementById('expenses-form').addEventListener('submit', function (e) {
+// Submit via email (mailto fallback)
+form.addEventListener('submit', function (e) {
   e.preventDefault();
 
   const name = document.getElementById('name').value;
@@ -83,16 +87,23 @@ document.getElementById('expenses-form').addEventListener('submit', function (e)
   window.location.href = `mailto:Kieran@ymca.scot?subject=${subject}&body=${body}`;
 });
 
-// PDF Generation from visible page
+// PDF generation (uses actual form)
 const downloadBtn = document.getElementById('download-pdf');
 downloadBtn.onclick = () => {
   const element = document.querySelector('.container');
-  const opt = {
-    margin: [10, 10],
-    filename: `YMCA_Expenses_${document.getElementById('name').value || 'claim'}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-  };
-  html2pdf()   .set({     margin: [15, 10, 15, 10], // top, left, bottom, right     filename: `YMCA_Expenses_${document.getElementById('name').value || 'claim'}.pdf`,     image: { type: 'jpeg', quality: 0.98 },     html2canvas: {       scale: 2,       scrollY: 0,       windowWidth: document.body.scrollWidth,     },     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },     pagebreak: { mode: ['css', 'legacy'] }   })   .from(element)   .save();
+  html2pdf()
+    .set({
+      margin: [15, 10, 15, 10],
+      filename: `YMCA_Expenses_${document.getElementById('name').value || 'claim'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        scrollY: 0,
+        windowWidth: document.body.scrollWidth,
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
+    })
+    .from(element)
+    .save();
 };
