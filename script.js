@@ -101,4 +101,39 @@ function generatePDF() {
 
   html2pdf().from(pdfContent).set(opt).save();
 }
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
+  const data = new FormData(form);
+  data.append('signature', canvas.toDataURL());
+
+  const json = {};
+  data.forEach((value, key) => {
+    if (!json[key]) {
+      json[key] = value;
+    } else {
+      if (!Array.isArray(json[key])) {
+        json[key] = [json[key]];
+      }
+      json[key].push(value);
+    }
+  });
+
+  const response = await fetch('https://formspree.io/f/movdbkbj', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(json)
+  });
+
+  if (response.ok) {
+    alert('✅ Your claim has been submitted successfully!');
+    form.reset();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    updateTotals();
+  } else {
+    alert('❌ There was a problem submitting your claim.');
+  }
+});
