@@ -24,7 +24,7 @@
 
       <section id="mileage-claims">
         <h2>Mileage Claims (£0.45 per mile)</h2>
-        <div class="entry">
+        <div class="entry mileage-entry">
           <input type="date" class="mileage-date" />
           <input type="text" class="mileage-purpose" placeholder="Purpose of Journey" />
           <input type="number" class="mileage-miles" placeholder="Miles" step="0.1" />
@@ -32,6 +32,29 @@
         </div>
         <button type="button" id="add-mileage">+ Add Mileage</button>
         <p>Subtotal: £<span id="mileage-subtotal">0.00</span></p>
+      </section>
+
+      <section id="phone-bills">
+        <h2>Mobile Phone Bill</h2>
+        <div class="entry phone-entry">
+          <input type="text" class="phone-period" placeholder="Bill Period" />
+          <label><input type="checkbox" class="phone-attached" /> Bill Attached?</label>
+          <input type="number" class="phone-amount" placeholder="£" step="0.01" />
+        </div>
+        <button type="button" id="add-phone">+ Add Phone Bill</button>
+        <p>Subtotal: £<span id="phone-subtotal">0.00</span></p>
+      </section>
+
+      <section id="other-expenses">
+        <h2>Other Expenses</h2>
+        <div class="entry other-entry">
+          <input type="date" class="other-date" />
+          <input type="text" class="other-reason" placeholder="Reason for Expense" />
+          <label><input type="checkbox" class="other-attached" /> Receipt Attached?</label>
+          <input type="number" class="other-amount" placeholder="£" step="0.01" />
+        </div>
+        <button type="button" id="add-other">+ Add Other Expense</button>
+        <p>Subtotal: £<span id="other-subtotal">0.00</span></p>
       </section>
 
       <section id="signature">
@@ -44,8 +67,6 @@
       <button type="submit" class="submit-btn">Submit Claim</button>
       <button type="button" id="download-pdf" class="submit-btn">Download PDF</button>
     </form>
-
-    <div id="pdfContent" style="display: none;"></div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
