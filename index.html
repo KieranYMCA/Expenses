@@ -7,38 +7,61 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="form-container">
     <header>
       <img src="ymca-scotland-logo.png" alt="YMCA Scotland Logo" class="logo" />
       <h1>Staff Mileage & Expenses Claim Form</h1>
     </header>
 
-    <form id="expenses-form">
+    <form action="https://formspree.io/f/movdbkbj" method="POST" id="expenses-form">
       <section class="user-info">
-        <input type="text" id="name" placeholder="Name" required />
-        <input type="text" id="jobTitle" placeholder="Job Title" required />
-        <input type="text" id="claimPeriod" placeholder="Period of Claim" required />
-        <input type="text" id="claimAuthorised" placeholder="Claim Authorised By" />
-        <input type="text" id="totalAmount" readonly placeholder="Total Amount Claimed (£)" />
+        <input type="text" id="name" name="name" placeholder="Name" required />
+        <input type="text" id="jobTitle" name="jobTitle" placeholder="Job Title" required />
+        <input type="text" id="claimPeriod" name="claimPeriod" placeholder="Period of Claim" required />
+        <input type="text" id="claimAuthorised" name="claimAuthorised" placeholder="Claim Authorised By" />
+        <input type="text" id="totalAmount" name="totalAmount" readonly placeholder="Total Amount Claimed (£)" />
       </section>
 
       <section id="mileage-claims">
         <h2>Mileage Claims (£0.45 per mile)</h2>
-        <div class="entry">
-          <input type="date" class="mileage-date" />
-          <input type="text" class="mileage-purpose" placeholder="Purpose of Journey" />
-          <input type="number" class="mileage-miles" placeholder="Miles" step="0.1" />
-          <input type="text" class="mileage-amount" placeholder="£" readonly />
+        <div class="entry mileage-entry">
+          <input type="date" class="mileage-date" name="mileage-date[]" />
+          <input type="text" class="mileage-purpose" name="mileage-purpose[]" placeholder="Purpose of Journey" />
+          <input type="number" class="mileage-miles" name="mileage-miles[]" placeholder="Miles" step="0.1" />
+          <input type="text" class="mileage-amount" name="mileage-amount[]" placeholder="£" readonly />
         </div>
         <button type="button" id="add-mileage">+ Add Mileage</button>
         <p>Subtotal: £<span id="mileage-subtotal">0.00</span></p>
+      </section>
+
+      <section id="phone-bills">
+        <h2>Mobile Phone Bill</h2>
+        <div class="entry phone-entry">
+          <input type="text" class="phone-period" name="phone-period[]" placeholder="Bill Period" />
+          <label><input type="checkbox" class="phone-attached" name="phone-attached[]" /> Bill Attached?</label>
+          <input type="number" class="phone-amount" name="phone-amount[]" placeholder="£" step="0.01" />
+        </div>
+        <button type="button" id="add-phone">+ Add Phone Bill</button>
+        <p>Subtotal: £<span id="phone-subtotal">0.00</span></p>
+      </section>
+
+      <section id="other-expenses">
+        <h2>Other Expenses</h2>
+        <div class="entry other-entry">
+          <input type="date" class="other-date" name="other-date[]" />
+          <input type="text" class="other-reason" name="other-reason[]" placeholder="Reason for Expense" />
+          <label><input type="checkbox" class="other-attached" name="other-attached[]" /> Receipt Attached?</label>
+          <input type="number" class="other-amount" name="other-amount[]" placeholder="£" step="0.01" />
+        </div>
+        <button type="button" id="add-other">+ Add Other Expense</button>
+        <p>Subtotal: £<span id="other-subtotal">0.00</span></p>
       </section>
 
       <section id="signature">
         <label for="signatureCanvas">Signed by staff member:</label><br />
         <canvas id="signatureCanvas" width="300" height="100"></canvas>
         <button type="button" id="clear-signature">Clear Signature</button>
-        <input type="date" id="signatureDate" />
+        <input type="date" id="signatureDate" name="signatureDate" />
       </section>
 
       <button type="submit" class="submit-btn">Submit Claim</button>
@@ -46,7 +69,6 @@
     </form>
   </div>
 
-  <!-- 🧾 Required for PDF generation -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="script.js"></script>
 </body>
